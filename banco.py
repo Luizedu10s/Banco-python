@@ -12,9 +12,9 @@ def novo_cliente():
 
 def deposito():
     conta = int(input('Digite o número da conta: '))
-    if conta in banco.keys():
+    if conta in banco:
         valor = float(input('Digite o valor do depósito: '))
-        banco[conta] = valor
+        banco[conta] += valor
         print('Deposito realizado com sucesso!')
     else:
         print('A conta digitada não existe em nosso banco!')
@@ -22,26 +22,27 @@ def deposito():
     sleep(5)
 
 def sacar():
+    valor_de_saque = float(input('Digite o valor do saque: '))
     conta = int(input('Digite o número da sua conta: '))
-    for conta, valor_em_conta in banco.items():
-        if conta in banco:
-            valor_de_saque = float(input('Digite o valor do saque: '))
-            if valor_em_conta < valor_de_saque:
-                print('Saldo insuficiente!')
-                break
-            else:
-                banco[conta] -= valor_de_saque
-                print(f'Saque de R${valor_de_saque} realizado com sucesso!')
-                break
+    if conta in banco:
+        if banco[conta] > valor_de_saque:
+            banco[conta] -= valor_de_saque
+            print(f'Saque de R${valor_de_saque} efetuado com sucesso!')
+        else:
+            print('Saldo insuficiente!')
+    else:
+        print('Essa conta não existe em nosso sistema!')
     print(' ')
     sleep(5)
 
+
 def extrato():
     conta = int(input('Digite o número da conta: '))
-    for conta, valor_na_conta in banco.items():
-        if conta in banco:
-            print(f'Saldo da conta {conta}: R${valor_na_conta}')
-            break
+    if conta in banco:
+        valor_na_conta = banco[conta]
+        print(f'Saldo da conta {conta}: R${valor_na_conta}')
+    if conta not in banco:
+        print('Essa conta não existe em nosso sistema!')   
     print(' ')
     sleep(5)
 
@@ -52,11 +53,11 @@ while True:
     print('MENU'.center(50))
     print('*' * 50)
     print(' ')
-    print('1 - Criar nova conta no banco')
-    print('2 - Fazer um saque')
-    print('3 - Fazer um depósito')
-    print('4 - Tirar Extrato')
-    print('5 - Sair do banco')
+    print('1 - Criar nova conta no banco'.center(50))
+    print('2 - Fazer um saque'.center(50))
+    print('3 - Fazer um depósito'.center(50))
+    print('4 - Tirar Extrato'.center(50))
+    print('5 - Sair do banco'.center(50))
     print(' ')
     print('*' * 50)
     print(' ')
