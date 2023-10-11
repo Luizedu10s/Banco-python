@@ -1,78 +1,78 @@
-from time import sleep 
+import PySimpleGUI as sg
+
+sg.theme('Darkblack')
 
 banco = {}
 
-def novo_cliente():
-    nome = input('Digite seu nome: ')
-    numero = int(input(f'{nome} Digite o número da conta a ser criada: '))
-    banco[numero] = 0
-    print(f'Perfeito {nome}, sua conta foi criada com sucesso!')
-    print(' ')
-    sleep(5)
+# FUNÇÃO PARA CRIAR CONTA
+def CriarConta():
+    global banco
+    sg.theme('Darkblack')
+    tela = [
+        [sg.Text("Digite seu nome: ")],
+        [sg.Input(key='nome')],
+        [sg.Text('Digite o número da conta a ser criada: ')],
+        [sg.Input(key='numero_da_conta')],
+        [sg.Button('Criar conta')]
+    ]
+    janela = sg.Window("Cadastro de conta", tela)
+    while True:
+        events, values = janela.read()
+        new_conta_number = int(values['numero_da_conta'])
+        if events == 'Criar conta':
+            banco += new_conta_number
+            banco[new_conta_number] += 0
+            janela.close()
+# FUNÇÃO PARA FAZER DEPÓSITO
+def Deposito():
+    sg.theme('Darkblack')
+    tela = [
+        [sg.Text("Digite o número da conta para deposito: ")],
+        [sg.Input(key='numero_conta')],
+        [sg.Text("Digite o valor que irá depositar: ")],
+        [sg.Input(key='valor_deposito')]
+    ]
+    janela = sg.Window('Deposito', tela)
+    while True:
+        events, values = janela.read()
+        num_conta = values['numero_conta']
+        valor_do_deposito = values['valor_deposito']
+        if events == sg.WINDOW_CLOSED:
+            break
+# FUNÇÃO PARA REALIZAR SAQUE
+def FazerSaque():
+    sg.theme('Darkblack')
+    tela = [
+        [sg.Text('Digite o número da conta: ')],
+        [sg.Input(key='numero_da_conta')],
+        [sg.Text('Digite o valor do saque: ')],
+        [sg.Input(key='valor_do_saque')],
+        [sg.Button('Sacar', key='saque_realizado')]
+    ]
+    janela = sg.Window('Tela de saque', janela)
+    while True:
+        events, values = janela.read()
+        number_conta = values['numero_da_conta']
+        valor_do_saque = values['valor_do_saque']
+        if events == sg.WINDOW_CLOSED:
+            break
 
-def deposito():
-    conta = int(input('Digite o número da conta: '))
-    if conta in banco:
-        valor = float(input('Digite o valor do depósito: '))
-        banco[conta] += valor
-        print('Deposito realizado com sucesso!')
-    else:
-        print('A conta digitada não existe em nosso banco!')
-    print(' ')
-    sleep(5)
+# TELA PRINCIPAL DO PROGRAMA.
+tela = [
+    [sg.Button('1 - Criar Nova conta no banco')],
+    [sg.Button('2 - Fazer um saque')],
+    [sg.Button('3 - Fazer um depósito')],
+    [sg.Button('4 - Tirar Extrato')],
+    [sg.Button('5 - Sair do banco')],
+    [sg.Text('Deseja Sair?')],
+    [sg.Button('Sim'), sg.Button('Não')]
+]
 
-def sacar():
-    valor_de_saque = float(input('Digite o valor do saque: '))
-    conta = int(input('Digite o número da sua conta: '))
-    if conta in banco:
-        if banco[conta] > valor_de_saque:
-            banco[conta] -= valor_de_saque
-            print(f'Saque de R${valor_de_saque} efetuado com sucesso!')
-        else:
-            print('Saldo insuficiente!')
-    else:
-        print('Essa conta não existe em nosso sistema!')
-    print(' ')
-    sleep(5)
-
-
-def extrato():
-    conta = int(input('Digite o número da conta: '))
-    if conta in banco:
-        valor_na_conta = banco[conta]
-        print(f'Saldo da conta {conta}: R${valor_na_conta}')
-    if conta not in banco:
-        print('Essa conta não existe em nosso sistema!')   
-    print(' ')
-    sleep(5)
-
-# Executando a aplicação!
+janela = sg.Window("Banco Python", tela)
 
 while True:
-    print('*' * 50)
-    print('MENU'.center(50))
-    print('*' * 50)
-    print(' ')
-    print('1 - Criar nova conta no banco'.center(50))
-    print('2 - Fazer um saque'.center(50))
-    print('3 - Fazer um depósito'.center(50))
-    print('4 - Tirar Extrato'.center(50))
-    print('5 - Sair do banco'.center(50))
-    print(' ')
-    print('*' * 50)
-    print(' ')
-    opc = int(input('Digite aqui: '))
-    if opc == 1:
-        novo_cliente()
-    if opc == 2:
-        sacar()
-    if opc == 3:
-        deposito()
-    if opc == 4:
-        extrato()
-    if opc == 5:
+    events, values = janela.read()
+    if events == 'Sim':
         break
-
-
-
- 
+    if events == '1 - Criar Nova conta no banco':
+        CriarConta()
