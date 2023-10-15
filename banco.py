@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+from time import sleep
 
 sg.theme('Darkblack')
 
@@ -12,16 +13,22 @@ def CriarConta():
         [sg.Input(key='nome')],
         [sg.Text('Digite o número da conta a ser criada: ')],
         [sg.Input(key='numero_da_conta')],
-        [sg.Button('Criar conta')]
+        [sg.Text(key='sucess', text_color='white')],
+        [sg.Button('Criar conta')], [sg.Button('Voltar para tela inicial')]
     ]
     janela = sg.Window("Cadastro de conta", tela)
     while True:
         events, values = janela.read()
-        conta_number = janela['numero_da_conta']
-        new_conta = int(conta_number)
-        if events == 'Criar conta':
-            banco = new_conta
+        if events == 'Voltar para tela inicial' or events == sg.WIN_CLOSED:
             janela.close()
+        if events == 'Criar conta':
+            banco[int(values['numero_da_conta'])] = 0
+            janela['sucess'].Update('Conta criada com sucesso!')
+            sleep(2)
+            if events == 'Voltar para tela inicial' or events == sg.WIN_CLOSED:
+                break
+        if events == sg.WIN_CLOSED:
+            break
 # FUNÇÃO PARA FAZER DEPÓSITO
 def Deposito():
     global banco
@@ -29,14 +36,19 @@ def Deposito():
         [sg.Text("Digite o número da conta para deposito: ")],
         [sg.Input(key='numero_conta')],
         [sg.Text("Digite o valor que irá depositar: ")],
-        [sg.Input(key='valor_deposito')]
+        [sg.Input(key='valor_deposito')],
+        [sg.Text(key='deposito_feito')],
+        [[sg.Button('Depositar')], [sg.Button('Voltar ao menu inicial')]]
     ]
     janela = sg.Window('Deposito', tela)
     while True:
         events, values = janela.read()
-        num_conta = values['numero_conta']
-        valor_do_deposito = values['valor_deposito']
-        if events == sg.WINDOW_CLOSED:
+        if events == 'Depositar':
+            banco[int(values['numero_conta'])] += int(values['valor_deposito'])
+            janela['deposito_feito'].Update('Depósito feito com sucesso!')
+        if events == 'Voltar ao menu inicial':
+            janela.close()
+        if events == sg.WIN_CLOSED:
             break
 # FUNÇÃO PARA REALIZAR SAQUE
 def FazerSaque():
@@ -46,14 +58,24 @@ def FazerSaque():
         [sg.Input(key='numero_da_conta')],
         [sg.Text('Digite o valor do saque: ')],
         [sg.Input(key='valor_do_saque')],
-        [sg.Button('Sacar', key='saque_realizado')]
+        [sg.Text(key='saque_realizado')],
+        [sg.Button('Sacar')]
     ]
-    janela = sg.Window('Tela de saque', janela)
+    janela = sg.Window('Tela de saque', tela)
     while True:
         events, values = janela.read()
-        number_conta = values['numero_da_conta']
-        valor_do_saque = values['valor_do_saque']
-        if events == sg.WINDOW_CLOSED:
+        conta = banco[(int(values['numero_da_conta']))]
+        valor_saque = int(values['valor_do_saque'])
+        if events == 'Sacar':
+            if conta in banco:
+                if banco[conta] > valor_saque:
+                    banco[conta] -= valor_saque
+                    janela['saque_realizado'].Update('Saque realizado com sucesso!')
+                else:
+                    janela['saque_realizado'].Update('Saldo Insuficiente.')
+                    sleep(2)
+        janela.close()
+        if events == sg.WIN_CLOSED:
             break
 # FUNÇÃO PARA RETIRAR EXTRATO
 def Extrato():
@@ -62,13 +84,13 @@ def Extrato():
         [sg.Text('Digite o número da conta: ')],
         [sg.Input(key='numero_da_conta')],
         [sg.Text('Saldo: ')],
-        [sg.Input(key='saldo_da_conta')]
-        [sg.Button('Retirar Extrato')], [sg.Buton('Cancelar')],
+        [sg.Text(key='saldo_da_conta')],
+        [sg.Button('Retirar Extrato')], [sg.Button('Cancelar')],
     ]
     janela = sg.Window('Retirar extrato', tela)
     while True:
         events, values = janela.read()
-        conta = values['numero_da_conta']
+        conta = int(values['numero_da_conta'])
         if events == 'Retirar Extrato':
             if conta in banco:
                 saldo = banco[conta]
@@ -78,7 +100,8 @@ def Extrato():
                 janela.close()
         if events == 'Cancelar':
             janela.close()
-
+        if events == sg.WIN_CLOSED:
+            break
 # TELA PRINCIPAL DO PROGRAMA.
 tela = [
     [sg.Button('1 - Criar Nova conta no banco')],
@@ -104,3 +127,7 @@ while True:
         Extrato()
     if events == '5 - Sair do banco':
         janela.close()
+    if events == sg.WIN_CLOSED:
+        break
+
+print(banco)
