@@ -44,7 +44,7 @@ def Deposito():
     while True:
         events, values = janela.read()
         if events == 'Depositar':
-            banco[int(values['numero_conta'])] += int(values['valor_deposito'])
+            banco[int(values['numero_conta'])] += float(values['valor_deposito'])
             janela['deposito_feito'].Update('Depósito feito com sucesso!')
         if events == 'Voltar ao menu inicial':
             janela.close()
@@ -59,14 +59,14 @@ def FazerSaque():
         [sg.Text('Digite o valor do saque: ')],
         [sg.Input(key='valor_do_saque')],
         [sg.Text(key='saque_realizado')],
-        [sg.Button('Sacar')]
+        [sg.Button('Sacar')], [sg.Button('Sair')]
     ]
     janela = sg.Window('Tela de saque', tela)
     while True:
         events, values = janela.read()
-        conta = banco[(int(values['numero_da_conta']))]
-        valor_saque = int(values['valor_do_saque'])
         if events == 'Sacar':
+            conta = int(values['numero_da_conta'])
+            valor_saque = float(values['valor_do_saque'])
             if conta in banco:
                 if banco[conta] > valor_saque:
                     banco[conta] -= valor_saque
@@ -74,7 +74,10 @@ def FazerSaque():
                 else:
                     janela['saque_realizado'].Update('Saldo Insuficiente.')
                     sleep(2)
-        janela.close()
+            else:
+                janela['saque_realizado'].Update('Conta Inexistente no banco!')
+        if events == 'Sair':
+            janela.close()
         if events == sg.WIN_CLOSED:
             break
 # FUNÇÃO PARA RETIRAR EXTRATO
@@ -90,11 +93,11 @@ def Extrato():
     janela = sg.Window('Retirar extrato', tela)
     while True:
         events, values = janela.read()
-        conta = int(values['numero_da_conta'])
         if events == 'Retirar Extrato':
+            conta = int(values['numero_da_conta'])
             if conta in banco:
                 saldo = banco[conta]
-                janela['saldo_da-conta'].Update(saldo)
+                janela['saldo_da_conta'].Update(f'R$ {saldo:.2f}')
             else:
                 janela['saldo_da_conta'].Update('Conta inexistente!')
                 janela.close()
@@ -105,9 +108,9 @@ def Extrato():
 # TELA PRINCIPAL DO PROGRAMA.
 tela = [
     [sg.Button('1 - Criar Nova conta no banco')],
-    [sg.Button('2 - Fazer um saque')],
+    [sg.Button('2 - Tirar Extrato')],
     [sg.Button('3 - Fazer um depósito')],
-    [sg.Button('4 - Tirar Extrato')],
+    [sg.Button('4 - Fazer um saque')],
     [sg.Button('5 - Sair do banco')],
 ]
 
@@ -119,15 +122,13 @@ while True:
         break
     if events == '1 - Criar Nova conta no banco':
         CriarConta()
-    if events == '2 - Fazer um saque':
-        FazerSaque()
+    if events == '2 - Tirar Extrato':
+        Extrato() 
     if events == '3 - Fazer um depósito':
         Deposito()
-    if events == '4 - Tirar Extrato':
-        Extrato()
+    if events == '4 - Fazer um saque':
+        FazerSaque()
     if events == '5 - Sair do banco':
         janela.close()
     if events == sg.WIN_CLOSED:
         break
-
-print(banco)
